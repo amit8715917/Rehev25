@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rehev25 | סידור עבודה</title>
+<style>
+:root{--navy:#173b60;--blue:#2563a6;--bg:#f3f6fa;--ink:#172638;--muted:#66778a;--line:#e1e8f0;--green:#16834b;--amber:#a76508}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,"Noto Sans Hebrew",sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#173b60,#245b88);color:white;padding:24px max(18px,calc((100% - 900px)/2)) 26px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand h1{font-size:28px;margin:0}.brand small{color:#d7e7f6}
+main{max-width:900px;margin:20px auto;padding:0 14px 40px}
+.tabs{display:flex;gap:8px;background:white;padding:7px;border:1px solid var(--line);border-radius:14px;margin-bottom:18px}
+.tabs button{flex:1;border:0;background:transparent;padding:12px;border-radius:10px;font-size:15px;font-weight:bold;color:var(--muted);cursor:pointer}
+.tabs button.active{background:var(--navy);color:white}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 20px}
+.stat,.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:15px}
+.stat strong{display:block;font-size:27px;margin-bottom:3px}.stat span{font-size:13px;color:var(--muted)}
+h2{font-size:21px;margin:18px 0 12px}.muted{color:var(--muted);font-size:13px}
+.cards{display:grid;gap:12px}.card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card h3{margin:0;font-size:18px}.task{font-weight:bold;margin:12px 0 7px}
+.meta{color:var(--muted);font-size:14px;line-height:1.8}
+.pill{font-size:12px;padding:6px 9px;border-radius:20px;background:#fff3dc;color:var(--amber);white-space:nowrap}
+.pill.done{background:#e5f5eb;color:var(--green)}
+button,.btn{cursor:pointer}.primary{border:0;border-radius:10px;background:var(--blue);color:white;padding:11px 15px;font-weight:bold}
+.secondary{border:1px solid var(--line);background:white;border-radius:9px;padding:8px 11px;color:var(--ink)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+input,textarea{width:100%;border:1px solid #ccd7e3;border-radius:9px;padding:11px;font:inherit;background:white}
+textarea{min-height:70px;resize:vertical}.full{grid-column:1/-1}
+.note{background:#f6f8fb;border-radius:9px;padding:10px;margin-top:10px;font-size:14px}
+.empty{padding:25px;text-align:center;color:var(--muted);background:white;border:1px dashed #cbd6e2;border-radius:14px}
+footer{text-align:center;color:#8090a0;font-size:12px;margin-top:24px}
+@media(max-width:560px){header{padding:20px 17px}.summary{gap:7px}.stat{padding:11px}.stat strong{font-size:23px}form{grid-template-columns:1fr}.full{grid-column:auto}.brand h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div><h1>🚙 Rehev25</h1><small>סידור עבודה · מחלקת רכב</small></div><small>מערכת הדגמה</small></div></header>
+<main>
+  <div class="tabs">
+    <button id="managerTab" class="active" onclick="setView('manager')">מסך מנהל</button>
+    <button id="driverTab" onclick="setView('driver')">מסך נהג</button>
+  </div>
+  <section id="managerView">
+    <h2>שלום, מנהל 👋</h2><div class="muted">ניהול ידני של הנהגים והמשימות</div>
+    <div class="summary">
+      <div class="stat"><strong id="total">0</strong><span>משימות</span></div>
+      <div class="stat"><strong id="completed" style="color:var(--green)">0</strong><span>בוצעו</span></div>
+      <div class="stat"><strong id="pending" style="color:var(--amber)">0</strong><span>פתוחות</span></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin-top:0">➕ הוספת נהג ומשימה</h2>
+      <form id="taskForm">
+        <div><label for="driver">שם הנהג</label><input id="driver" required placeholder="לדוגמה: נהג א׳"></div>
+        <div><label for="job">משימה</label><input id="job" required placeholder="לדוגמה: הסעה"></div>
+        <div><label for="time">שעה</label><input id="time" type="time"></div>
+        <div><label for="destination">יעד</label><input id="destination" placeholder="יעד לדוגמה"></div>
+        <div><label for="contact">איש קשר</label><input id="contact" placeholder="תפקיד / איש קשר"></div>
+        <div><label for="phone">טלפון איש קשר</label><input id="phone" type="tel" placeholder="טלפון (נתוני דוגמה בלבד)"></div>
+        <div class="full"><label for="remarks">הערות</label><textarea id="remarks" placeholder="הערות למשימה"></textarea></div>
+        <div class="full"><button class="primary" type="submit">הוסף משימה</button></div>
+      </form>
+    </div>
+    <h2>לוח המשימות</h2><div id="managerTasks" class="cards"></div>
+  </section>
+  <section id="driverView" hidden>
+    <h2>המשימות שלי 🚗</h2><div class="muted">תצוגת נהג – בחר את שמך כדי לראות את המשימות ששובצו לך.</div>
+    <div class="panel" style="margin:14px 0"><label for="driverFilter">שם הנהג</label><select id="driverFilter" style="width:100%;padding:11px;border:1px solid #ccd7e3;border-radius:9px;font:inherit" onchange="render()"><option value="">כל הנהגים (הדגמה)</option></select></div>
+    <div id="driverTasks" class="cards"></div>
+  </section>
+  <footer>Rehev25 · גרסת הדגמה מקומית · אין להזין מידע אישי או צבאי</footer>
+</main>
+<script>
+const KEY='rehev25_demo_tasks_v1';
+let tasks=[];
+try{tasks=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){tasks=[]}
+if(!tasks.length){tasks=[
+{id:1,driver:'ישראל ישראלי',job:'הסעת נוסעים',time:'08:00',destination:'יעד לדוגמה',contact:'אחראי משימה',phone:'',remarks:'להגיע מוכן',done:false,note:''},
+{id:2,driver:'דוד כהן',job:'שינוע רכב',time:'10:00',destination:'יעד לדוגמה',contact:'אחראי משימה',phone:'',remarks:'',done:false,note:''},
+{id:3,driver:'יוסי לוי',job:'איסוף רכב',time:'12:30',destination:'יעד לדוגמה',contact:'אחראי משימה',phone:'',remarks:'',done:true,note:'הושלם (דוגמה)'}
+];save()}
+function save(){localStorage.setItem(KEY,JSON.stringify(tasks))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function setView(v){document.getElementById('managerView').hidden=v!=='manager';document.getElementById('driverView').hidden=v!=='driver';document.getElementById('managerTab').classList.toggle('active',v==='manager');document.getElementById('driverTab').classList.toggle('active',v==='driver');render()}
+function card(t,driverMode=false){return `<article class="card"><div class="card-top"><h3>${esc(t.driver)}</h3><span class="pill ${t.done?'done':''}">${t.done?'בוצע ✓':'ממתין לביצוע'}</span></div><div class="task">${esc(t.job)}</div><div class="meta">🕒 ${esc(t.time||'לא הוגדרה שעה')} · 📍 ${esc(t.destination||'לא צוין יעד')}<br>☎ ${esc(t.contact||'לא הוגדר איש קשר')}${t.phone?` · ${esc(t.phone)}`:''}</div>${t.remarks?`<div class="note"><b>הערות:</b> ${esc(t.remarks)}</div>`:''}${driverMode?`<div class="note"><label>עדכון למנהל</label><textarea id="note-${t.id}" placeholder="כתוב עדכון קצר...">${esc(t.note)}</textarea><div class="actions"><button class="primary" onclick="complete(${t.id})">${t.done?'עדכן סימון':'✓ סיימתי את המשימה'}</button></div></div>`:`<div class="actions"><button class="secondary" onclick="toggleDone(${t.id})">${t.done?'החזר לפתוחות':'סמן כבוצעה'}</button><button class="secondary" onclick="editTask(${t.id})">עריכה</button><button class="secondary" onclick="deleteTask(${t.id})">מחיקה</button></div>${t.note?`<div class="note"><b>עדכון נהג:</b> ${esc(t.note)}</div>`:''}`}</article>`}
+function render(){document.getElementById('total').textContent=tasks.length;document.getElementById('completed').textContent=tasks.filter(t=>t.done).length;document.getElementById('pending').textContent=tasks.filter(t=>!t.done).length;document.getElementById('managerTasks').innerHTML=tasks.length?tasks.map(t=>card(t)).join(''):'<div class="empty">עדיין לא הוספת משימות.</div>';let names=[...new Set(tasks.map(t=>t.driver))];let sel=document.getElementById('driverFilter'),old=sel.value;sel.innerHTML='<option value="">כל הנהגים (הדגמה)</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');sel.value=names.includes(old)?old:'';let filtered=tasks.filter(t=>!sel.value||t.driver===sel.value);document.getElementById('driverTasks').innerHTML=filtered.length?filtered.map(t=>card(t,true)).join(''):'<div class="empty">לא נמצאו משימות לנהג הזה.</div>'}
+document.getElementById('taskForm').addEventListener('submit',e=>{e.preventDefault();let v=id=>document.getElementById(id).value.trim();tasks.unshift({id:Date.now(),driver:v('driver'),job:v('job'),time:v('time'),destination:v('destination'),contact:v('contact'),phone:v('phone'),remarks:v('remarks'),done:false,note:''});save();e.target.reset();render()});
+function complete(id){let t=tasks.find(x=>x.id===id);if(!t)return;t.note=document.getElementById('note-'+id).value.trim();t.done=true;save();render()}
+function toggleDone(id){let t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();render()}}
+function deleteTask(id){if(confirm('למחוק את המשימה?')){tasks=tasks.filter(t=>t.id!==id);save();render()}}
+function editTask(id){let t=tasks.find(x=>x.id===id);if(!t)return;let name=prompt('שם הנהג',t.driver);if(name===null)return;let job=prompt('משימה',t.job);if(job===null)return;t.driver=name.trim()||t.driver;t.job=job.trim()||t.job;save();render()}
+render();
+</script>
+</body></html>
